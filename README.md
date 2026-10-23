@@ -1,4 +1,4 @@
-# Diet Agnet Learning
+# Diet Agent Learning
 我的饮食推荐 Agent学习项目
 
 ## 学习目标
