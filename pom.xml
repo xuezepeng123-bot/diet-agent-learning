@@ -40,6 +40,11 @@
     <!-- 让java能连接mysql驱动 -->
     <scope>runtime</scope>
 </dependency>
+<dependency>
+    <groupId>io.agentscope</groupId>
+    <artifactId>agentscope-spring-boot-starter</artifactId>
+    <version>1.0.11</version>
+</dependency>
     </dependencies>
 
     <build>
