@@ -20,7 +20,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <!-- 引入web服务和json支持 -->
         </dependency>
+        <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <!-- 添加测试依赖，引入JUnit与spring测试工具 -->
+    <scope>test</scope>
+</dependency>
     </dependencies>
 
     <build>
@@ -28,6 +35,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- 让maven能启动spring boot应用 -->
             </plugin>
         </plugins>
     </build>
