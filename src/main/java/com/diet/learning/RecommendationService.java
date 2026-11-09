@@ -10,9 +10,12 @@ public class RecommendationService {
    
 
     public Result recommend(String message) {
-       var preferences = preferenceExtractor.extract(message);
-       String mealTime = preferences.mealTime();
-     String taste = preferences.taste();
+    return recommendForPreferences(preferenceExtractor.extract(message));
+}
+
+public Result recommendForPreferences(MealPreferenceExtractor.Preferences preferences) {
+    String mealTime = preferences.mealTime();
+    String taste = preferences.taste();
 
         if (mealTime == null) {
             return new Result("ASK", "你想吃早餐、午餐还是晚餐？", List.of());
