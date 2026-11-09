@@ -33,20 +33,10 @@ public class MealPreferenceExtractor {
     private final ObjectMapper json;
     private final DashScopeChatModel model;
 
-    public MealPreferenceExtractor(ObjectMapper json,
-            @Value("${DASHSCOPE_API_KEY:}") String apiKey,
-            @Value("${DASHSCOPE_BASE_URL:}") String baseUrl) {
-        this.json = json;
-        this.model = apiKey.isBlank() || baseUrl.isBlank() ? null : DashScopeChatModel.builder()
-                .apiKey(apiKey)
-                .baseUrl(baseUrl)
-                .modelName("qwen3.7-flash")
-                .endpointType(EndpointType.MULTIMODAL)
-                .enableThinking(false)
-                .stream(false)
-                .defaultOptions(GenerateOptions.builder().maxTokens(128).build())
-                .build();
-    }
+   public MealPreferenceExtractor(ObjectMapper json, DietChatModel chatModel) {
+    this.json = json;
+    this.model = chatModel.getModel();
+}
 
     public Preferences extract(String message) {
         String text = message == null ? "" : message;
