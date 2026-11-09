@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diet.learning.MealConversationMapper">
+
+    <resultMap id="sessionRow" type="com.diet.learning.MealConversationMapper$SessionRow">
+        <constructor>
+            <idArg column="session_id" javaType="java.lang.String"/>
+            <arg column="meal_time" javaType="java.lang.String"/>
+            <arg column="taste" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findById" resultMap="sessionRow">
+        SELECT session_id, meal_time, taste
+        FROM meal_conversation
+        WHERE session_id = #{sessionId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO meal_conversation (session_id, meal_time, taste)
+        VALUES (#{sessionId}, #{mealTime,jdbcType=VARCHAR}, #{taste,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="mergePreferences">
+        UPDATE meal_conversation
+        SET meal_time = COALESCE(#{mealTime,jdbcType=VARCHAR}, meal_time),
+            taste = COALESCE(#{taste,jdbcType=VARCHAR}, taste)
+        WHERE session_id = #{sessionId}
+    </update>
+
+</mapper>
