@@ -1,8 +1,6 @@
 package com.diet.learning;
 
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,14 +9,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class MealConversationController {
-    private final ConcurrentMap<UUID, MealPreferenceExtractor.Preferences> sessions =
-            new ConcurrentHashMap<>();
-
+    private final MealConversationService conversationService;
     private final MealPreferenceExtractor preferenceExtractor;
     private final RecommendationService recommendationService;
 
-    public MealConversationController(MealPreferenceExtractor preferenceExtractor,
+    public MealConversationController(MealConversationService conversationService,
+            MealPreferenceExtractor preferenceExtractor,
             RecommendationService recommendationService) {
+        this.conversationService = conversationService;
         this.preferenceExtractor = preferenceExtractor;
         this.recommendationService = recommendationService;
     }
@@ -29,24 +27,11 @@ public class MealConversationController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入饮食需求");
         }
 
-        UUID sessionId = request.sessionId();
-        if (sessionId == null) {
-            sessionId = UUID.randomUUID();
-        } else if (!sessions.containsKey(sessionId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "会话不存在");
-        }
-
+        conversationService.checkSession(request.sessionId());
         var latest = preferenceExtractor.extract(request.message());
-        var merged = sessions.compute(sessionId, (id, previous) -> {
-            if (previous == null) {
-                return latest;
-            }
-            return new MealPreferenceExtractor.Preferences(
-                    latest.mealTime() == null ? previous.mealTime() : latest.mealTime(),
-                    latest.taste() == null ? previous.taste() : latest.taste());
-        });
-
-        return new Turn(sessionId, recommendationService.recommendForPreferences(merged));
+        var saved = conversationService.saveTurn(request.sessionId(), latest);
+        var result = recommendationService.recommendForPreferences(saved.preferences());
+        return new Turn(saved.sessionId(), result);
     }
 
     public record Request(UUID sessionId, String message) {}
